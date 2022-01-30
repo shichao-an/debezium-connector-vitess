@@ -7,6 +7,7 @@ package io.debezium.connector.vitess.connection;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Types;
 
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class ReplicationMessageColumnTest {
                 AnonymousValue.getString(),
                 new VitessType(AnonymousValue.getString(), Types.INTEGER),
                 true,
-                "10");
+                "10".getBytes(StandardCharsets.UTF_8));
         Object columnValue = column.getValue(false);
         assertThat(columnValue).isEqualTo(10);
     }
@@ -33,7 +34,7 @@ public class ReplicationMessageColumnTest {
                 AnonymousValue.getString(),
                 new VitessType(AnonymousValue.getString(), Types.INTEGER),
                 true,
-                "10.1");
+                "10.1".getBytes(StandardCharsets.UTF_8));
         column.getValue(false);
     }
 }

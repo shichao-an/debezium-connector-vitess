@@ -32,7 +32,7 @@ public class VitessValueConverter extends JdbcValueConverters {
         this.includeUnknownDatatypes = includeUnknownDatatypes;
     }
 
-    // Get Kafka connect schema from Debebzium column.
+    // Get Kafka connect schema from Debezium column.
     @Override
     public SchemaBuilder schemaBuilder(Column column) {
         String typeName = column.typeName().toUpperCase();

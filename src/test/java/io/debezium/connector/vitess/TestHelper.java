@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.common.primitives.Bytes;
 import com.google.protobuf.ByteString;
 
 import io.debezium.config.Configuration;
@@ -197,7 +198,7 @@ public class TestHelper {
     }
 
     public static Binlogdata.VEvent newInsertEvent(List<ColumnValue> columnValues) {
-        List<String> rawValues = newRawValues(columnValues);
+        List<byte[]> rawValues = newRawValues(columnValues);
         Query.Row row = newRow(rawValues);
 
         return Binlogdata.VEvent.newBuilder()
@@ -216,7 +217,7 @@ public class TestHelper {
     }
 
     public static Binlogdata.VEvent newDeleteEvent(List<ColumnValue> columnValues) {
-        List<String> rawValues = newRawValues(columnValues);
+        List<byte[]> rawValues = newRawValues(columnValues);
         Query.Row row = newRow(rawValues);
 
         return Binlogdata.VEvent.newBuilder()
@@ -236,9 +237,9 @@ public class TestHelper {
 
     public static Binlogdata.VEvent newUpdateEvent(
                                                    List<ColumnValue> beforeColumnValues, List<ColumnValue> afterColumnValues) {
-        List<String> beforeRawValues = newRawValues(beforeColumnValues);
+        List<byte[]> beforeRawValues = newRawValues(beforeColumnValues);
         Query.Row beforeRow = newRow(beforeRawValues);
-        List<String> afterRawValues = newRawValues(afterColumnValues);
+        List<byte[]> afterRawValues = newRawValues(afterColumnValues);
         Query.Row afterRow = newRow(afterRawValues);
 
         return Binlogdata.VEvent.newBuilder()
@@ -254,17 +255,17 @@ public class TestHelper {
 
     public static List<ColumnValue> defaultColumnValues() {
         return Arrays.asList(
-                new ColumnValue("bool_col", Query.Type.INT8, Types.SMALLINT, "1", (short) 1),
+                new ColumnValue("bool_col", Query.Type.INT8, Types.SMALLINT, "1".getBytes(StandardCharsets.UTF_8), (short) 1),
                 new ColumnValue("int_col", Query.Type.INT32, Types.INTEGER, null, null),
-                new ColumnValue("long_col", Query.Type.INT32, Types.BIGINT, "23", 23L),
-                new ColumnValue("string_col", Query.Type.VARBINARY, Types.VARCHAR, "test", "test"));
+                new ColumnValue("long_col", Query.Type.INT32, Types.BIGINT, "23".getBytes(StandardCharsets.UTF_8), 23L),
+                new ColumnValue("string_col", Query.Type.VARBINARY, Types.VARCHAR, "test".getBytes(StandardCharsets.UTF_8), "test"));
     }
 
-    public static List<String> defaultRawValues() {
+    public static List<byte[]> defaultRawValues() {
         return newRawValues(defaultColumnValues());
     }
 
-    public static List<String> newRawValues(List<ColumnValue> columnValues) {
+    public static List<byte[]> newRawValues(List<ColumnValue> columnValues) {
         return columnValues.stream().map(x -> x.getRawValue()).collect(Collectors.toList());
     }
 
@@ -276,15 +277,13 @@ public class TestHelper {
         return newRow(defaultRawValues());
     }
 
-    public static Query.Row newRow(List<String> rawValues) {
+    public static Query.Row newRow(List<byte[]> rawValues) {
         return Query.Row.newBuilder()
                 .setValues(
-                        ByteString.copyFrom(
-                                rawValues.stream().filter(Objects::nonNull).collect(Collectors.joining()),
-                                StandardCharsets.UTF_8))
+                        ByteString.copyFrom(Bytes.concat(rawValues.stream().filter(Objects::nonNull).toArray(byte[][]::new))))
                 .addAllLengths(
-                        defaultRawValues().stream()
-                                .map(x -> x != null ? (long) x.length() : -1L)
+                        rawValues.stream()
+                                .map(x -> x != null ? (long) x.length : -1L)
                                 .collect(Collectors.toList()))
                 .build();
     }
@@ -313,7 +312,7 @@ public class TestHelper {
         private final Object javaValue;
 
         public ColumnValue(
-                           String columnName, Query.Type queryType, int jdbcId, String rawValue, Object javaValue) {
+                           String columnName, Query.Type queryType, int jdbcId, byte[] rawValue, Object javaValue) {
             this.field = Field.newBuilder().setName(columnName).setType(queryType).build();
             this.replicationMessageColumn = new ReplicationMessageColumn(
                     columnName, new VitessType(queryType.name(), jdbcId), true, rawValue);
@@ -328,7 +327,7 @@ public class TestHelper {
             return replicationMessageColumn;
         }
 
-        public String getRawValue() {
+        public byte[] getRawValue() {
             return replicationMessageColumn.getRawValue();
         }
 
