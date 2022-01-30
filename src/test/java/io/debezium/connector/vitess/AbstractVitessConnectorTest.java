@@ -14,9 +14,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -39,6 +39,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.BaseEncoding;
 
 import io.debezium.data.Json;
 import io.debezium.data.SchemaUtil;
@@ -141,14 +142,36 @@ public abstract class AbstractVitessConnectorTest extends AbstractConnectorTest 
         return fields;
     }
 
-    protected List<SchemaAndValueField> schemasAndValuesForBytesTypes() {
+    protected List<SchemaAndValueField> schemasAndValuesForBytesTypesAsBytes() {
         final List<SchemaAndValueField> fields = new ArrayList<>();
         fields.addAll(
                 Arrays.asList(
-                        new SchemaAndValueField("binary_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("d\0".getBytes(StandardCharsets.UTF_8))),
-                        new SchemaAndValueField("varbinary_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("ef".getBytes(StandardCharsets.UTF_8))),
-                        new SchemaAndValueField("blob_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("op".getBytes(StandardCharsets.UTF_8))),
-                        new SchemaAndValueField("mediumblob_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("qs".getBytes(StandardCharsets.UTF_8)))));
+                        new SchemaAndValueField("binary_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("d\0".getBytes())),
+                        new SchemaAndValueField("varbinary_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("ef".getBytes())),
+                        new SchemaAndValueField("blob_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("op".getBytes())),
+                        new SchemaAndValueField("mediumblob_col", SchemaBuilder.OPTIONAL_BYTES_SCHEMA, ByteBuffer.wrap("qs".getBytes()))));
+        return fields;
+    }
+
+    protected List<SchemaAndValueField> schemasAndValuesForBytesTypesAsBase64String() {
+        final List<SchemaAndValueField> fields = new ArrayList<>();
+        fields.addAll(
+                Arrays.asList(
+                        new SchemaAndValueField("binary_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, Base64.getEncoder().encodeToString("d\0".getBytes())),
+                        new SchemaAndValueField("varbinary_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, Base64.getEncoder().encodeToString("ef".getBytes())),
+                        new SchemaAndValueField("blob_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, Base64.getEncoder().encodeToString("op".getBytes())),
+                        new SchemaAndValueField("mediumblob_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, Base64.getEncoder().encodeToString("qs".getBytes()))));
+        return fields;
+    }
+
+    protected List<SchemaAndValueField> schemasAndValuesForBytesTypesAsHexString() {
+        final List<SchemaAndValueField> fields = new ArrayList<>();
+        fields.addAll(
+                Arrays.asList(
+                        new SchemaAndValueField("binary_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, BaseEncoding.base16().lowerCase().encode("d\0".getBytes())),
+                        new SchemaAndValueField("varbinary_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, BaseEncoding.base16().lowerCase().encode("ef".getBytes())),
+                        new SchemaAndValueField("blob_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, BaseEncoding.base16().lowerCase().encode("op".getBytes())),
+                        new SchemaAndValueField("mediumblob_col", SchemaBuilder.OPTIONAL_STRING_SCHEMA, BaseEncoding.base16().lowerCase().encode("qs".getBytes()))));
         return fields;
     }
 

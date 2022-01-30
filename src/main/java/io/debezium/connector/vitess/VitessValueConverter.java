@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.kafka.connect.data.Field;
 import org.apache.kafka.connect.data.SchemaBuilder;
 
+import io.debezium.config.CommonConnectorConfig.BinaryHandlingMode;
 import io.debezium.data.Json;
 import io.debezium.jdbc.JdbcValueConverters;
 import io.debezium.jdbc.TemporalPrecisionMode;
@@ -27,8 +28,9 @@ public class VitessValueConverter extends JdbcValueConverters {
                                 DecimalMode decimalMode,
                                 TemporalPrecisionMode temporalPrecisionMode,
                                 ZoneOffset defaultOffset,
+                                BinaryHandlingMode binaryMode,
                                 boolean includeUnknownDatatypes) {
-        super(decimalMode, temporalPrecisionMode, defaultOffset, null, null, null);
+        super(decimalMode, temporalPrecisionMode, defaultOffset, null, null, binaryMode);
         this.includeUnknownDatatypes = includeUnknownDatatypes;
     }
 
@@ -55,7 +57,7 @@ public class VitessValueConverter extends JdbcValueConverters {
         }
     }
 
-    // Convert Java value to Kafka connect value.
+    // Convert Java value to Kafka Connect value.
     @Override
     public ValueConverter converter(Column column, Field fieldDefn) {
         String typeName = column.typeName().toUpperCase();
