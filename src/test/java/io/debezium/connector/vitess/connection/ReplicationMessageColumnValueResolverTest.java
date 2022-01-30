@@ -54,6 +54,24 @@ public class ReplicationMessageColumnValueResolverTest {
     }
 
     @Test
+    public void shouldResolveBlobToBytes() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.BLOB),
+                new VitessColumnValue("foo".getBytes(StandardCharsets.UTF_8)),
+                false);
+        assertThat(resolvedJavaValue).isEqualTo("foo".getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    public void shouldResolveBinaryToBytes() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.BINARY),
+                new VitessColumnValue("foo".getBytes(StandardCharsets.UTF_8)),
+                false);
+        assertThat(resolvedJavaValue).isEqualTo("foo".getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Test
     public void shouldResolveFloatToFloat() {
         Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
                 new VitessType(AnonymousValue.getString(), Types.FLOAT),

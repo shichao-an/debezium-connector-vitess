@@ -120,6 +120,9 @@ public class VitessConnectorIT extends AbstractVitessConnectorTest {
         assertInsert(INSERT_STRING_TYPES_STMT, schemasAndValuesForStringTypes(), TestHelper.PK_FIELD);
 
         consumer.expects(expectedRecordsCount);
+        assertInsert(INSERT_BYTES_TYPES_STMT, schemasAndValuesForBytesTypes(), TestHelper.PK_FIELD);
+
+        consumer.expects(expectedRecordsCount);
         assertInsert(INSERT_ENUM_TYPE_STMT, schemasAndValuesForEnumType(), TestHelper.PK_FIELD);
 
         consumer.expects(expectedRecordsCount);

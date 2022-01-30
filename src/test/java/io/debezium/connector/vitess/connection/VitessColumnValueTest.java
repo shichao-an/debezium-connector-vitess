@@ -17,6 +17,12 @@ import io.debezium.connector.vitess.VitessType;
 public class VitessColumnValueTest {
 
     @Test
+    public void shouldConvertRawValueToBytes() {
+        VitessColumnValue value = new VitessColumnValue("1".getBytes(StandardCharsets.UTF_8));
+        assertThat(value.asBytes()).isEqualTo("1".getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Test
     public void shouldConvertRawValueToString() {
         VitessColumnValue value = new VitessColumnValue("1".getBytes(StandardCharsets.UTF_8));
         assertThat(value.asString()).isEqualTo("1");
