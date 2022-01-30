@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -255,10 +254,10 @@ public class TestHelper {
 
     public static List<ColumnValue> defaultColumnValues() {
         return Arrays.asList(
-                new ColumnValue("bool_col", Query.Type.INT8, Types.SMALLINT, "1".getBytes(StandardCharsets.UTF_8), (short) 1),
+                new ColumnValue("bool_col", Query.Type.INT8, Types.SMALLINT, "1".getBytes(), (short) 1),
                 new ColumnValue("int_col", Query.Type.INT32, Types.INTEGER, null, null),
-                new ColumnValue("long_col", Query.Type.INT32, Types.BIGINT, "23".getBytes(StandardCharsets.UTF_8), 23L),
-                new ColumnValue("string_col", Query.Type.VARBINARY, Types.VARCHAR, "test".getBytes(StandardCharsets.UTF_8), "test"));
+                new ColumnValue("long_col", Query.Type.INT32, Types.BIGINT, "23".getBytes(), 23L),
+                new ColumnValue("string_col", Query.Type.VARBINARY, Types.VARCHAR, "test".getBytes(), "test"));
     }
 
     public static List<byte[]> defaultRawValues() {
